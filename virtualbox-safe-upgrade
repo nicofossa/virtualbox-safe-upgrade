@@ -1,0 +1,26 @@
+#!/bin/sh
+
+#Collect login name, will check only the current logged in user.
+LOGNAME="$(logname)"
+
+#Collecting machine names
+OUT_NAMES="$(sudo -u ${LOGNAME} vboxmanage list vms -s)"
+COUNTER=0
+while IFS= read -r line; do
+    names[$COUNTER]="$(echo ${line} | grep -o '\"[[:alnum:][:space:]]*\"' | grep -o '[[:alnum:][:space:]]*')"
+    COUNTER=$((COUNTER+1))
+done <<< "$OUT_NAMES"
+
+
+
+
+#For each line check if the machine is powered off
+OUTPUT="$(sudo -u ${LOGNAME} vboxmanage list vms -l -s | grep State:)"
+COUNTER=0
+while IFS= read -r line; do
+    { echo "${line}" | grep "powered off" > /dev/null && echo -e "\e[32m[OK]\e[0m ${names[$COUNTER]} powered off." ; } || 
+        { echo -e "\e[31m[ERROR]\e[0m ${names[$COUNTER]} is not powered off! Stopping VirtualBox update."  ; exit 1 ; }
+    COUNTER=$((COUNTER+1))
+done <<< "$OUTPUT"
+
+exit 0
