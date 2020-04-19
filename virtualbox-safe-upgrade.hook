@@ -1,0 +1,11 @@
+[Trigger]
+Operation = Install
+Operation = Upgrade
+Type = Package
+Target = virtualbox
+
+[Action]
+Description = Checking running Virtual Machines...
+When = PreTransaction
+Exec = /usr/bin/virtualbox-safe-upgrade
+AbortOnFail
