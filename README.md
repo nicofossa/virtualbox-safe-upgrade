@@ -13,4 +13,6 @@ Then enable the hook by copying it to `/usr/share/libalpm/hooks/`.
 
 Remember to set the correct permission/owner to this file (look for other files in the same directory).
 
+It is better to rename the hook with a leading `00-` in order to stop the update process as soon as possible.
+
 
