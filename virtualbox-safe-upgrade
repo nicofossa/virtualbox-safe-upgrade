@@ -1,15 +1,15 @@
 #!/bin/sh
 
 #Collect login name, will check only the current logged in user.
-LOGNAME="$(logname)"
+LOGNAME="$(/usr/bin/logname)"
 
 #Collecting machine names
-OUT_NAMES="$(sudo -u ${LOGNAME} vboxmanage list vms -s)"
+OUT_NAMES="$(/usr/bin/sudo -u ${LOGNAME} /usr/bin/vboxmanage list vms -s)"
 COUNTER=0
 while IFS= read -r line; do
-    names[COUNTER]="$(echo ${line} | grep -o '\"[[:alnum:][:space:]<>]*\"' | grep -o '[[:alnum:][:space:]<>]*')"
-    { echo "${names[$COUNTER]}" | grep "<inaccessible>" > /dev/null ; } && 
-        { echo -e "\e[31m[ERROR]\e[0m Some VMs are not accessible! Stopping VirtualBox update." ; exit 1 ; }
+    names[COUNTER]="$(/usr/bin/echo ${line} | /usr/bin/grep -o '\"[[:alnum:][:space:]<>]*\"' | /usr/bin/grep -o '[[:alnum:][:space:]<>]*')"
+    { /usr/bin/echo "${names[$COUNTER]}" | /usr/bin/grep "<inaccessible>" > /dev/null ; } && 
+        { /usr/bin/echo -e "\e[31m[ERROR]\e[0m Some VMs are not accessible! Stopping VirtualBox update." ; exit 1 ; }
     COUNTER=$((COUNTER+1))
 done <<< "$OUT_NAMES"
 
@@ -17,11 +17,11 @@ done <<< "$OUT_NAMES"
 
 
 #For each line check if the machine is powered off
-OUTPUT="$(sudo -u ${LOGNAME} vboxmanage list vms -l -s | grep State:)"
+OUTPUT="$(/usr/bin/sudo -u ${LOGNAME} /usr/bin/vboxmanage list vms -l -s | /usr/bin/grep State:)"
 COUNTER=0
 while IFS= read -r line; do
-    { echo "${line}" | grep "powered off" > /dev/null && echo -e "\e[32m[OK]\e[0m ${names[$COUNTER]} powered off." ; } || 
-        { echo -e "\e[31m[ERROR]\e[0m ${names[$COUNTER]} is not powered off! Stopping VirtualBox update."  ; exit 1 ; }
+    { /usr/bin/echo "${line}" | /usr/bin/grep "powered off" > /dev/null && /usr/bin/echo -e "\e[32m[OK]\e[0m ${names[$COUNTER]} powered off." ; } || 
+        { /usr/bin/echo -e "\e[31m[ERROR]\e[0m ${names[$COUNTER]} is not powered off! Stopping VirtualBox update."  ; exit 1 ; }
     COUNTER=$((COUNTER+1))
 done <<< "$OUTPUT"
 
